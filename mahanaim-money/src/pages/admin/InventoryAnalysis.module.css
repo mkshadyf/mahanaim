@@ -1,0 +1,27 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mantine-spacing-xl);
+}
+
+.paper {
+  position: relative;
+  padding: var(--mantine-spacing-md);
+}
+
+.statTitle {
+  font-size: var(--mantine-font-size-lg);
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: var(--mantine-font-size-xl);
+  font-weight: 700;
+}
+
+.statLabel {
+  text-align: center;
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 700;
+} 

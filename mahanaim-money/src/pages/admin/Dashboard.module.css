@@ -1,0 +1,21 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mantine-spacing-xl);
+}
+
+.select {
+  width: 200px;
+}
+
+.statTitle {
+  font-size: var(--mantine-font-size-lg);
+  font-weight: 500;
+  margin-bottom: var(--mantine-spacing-md);
+}
+
+.statValue {
+  font-size: var(--mantine-font-size-xl);
+  font-weight: 700;
+} 

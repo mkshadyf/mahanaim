@@ -1,0 +1,14 @@
+.title {
+  margin-bottom: var(--mantine-spacing-md);
+}
+
+.sectionTitle {
+  font-weight: 500;
+  font-size: var(--mantine-font-size-lg);
+  margin-bottom: var(--mantine-spacing-md);
+}
+
+.paper {
+  position: relative;
+  padding: var(--mantine-spacing-xl);
+} 
