@@ -1,0 +1,92 @@
+{
+  "common": {
+    "appName": "Mahanaim Money",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "update": "Update",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "welcome": "Welcome"
+  },
+  "auth": {
+    "login": "Login",
+    "loginSubtitle": "Welcome back! Please sign in to continue.",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "contactAdmin": "Contact administrator",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "createAccount": "Create account",
+    "loginSuccess": "Successfully signed in",
+    "loginError": "Failed to sign in. Please check your credentials.",
+    "signOutSuccess": "Successfully signed out",
+    "signOutError": "Failed to sign out",
+    "invalidEmail": "Invalid email address",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "resetPassword": {
+      "title": "Reset Password",
+      "description": "Enter your email address and we'll send you instructions to reset your password.",
+      "backToLogin": "Back to login",
+      "submit": "Send instructions"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "shops": "Shops",
+    "debts": "Debts",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "totalTransactions": "Total Transactions",
+    "totalVolume": "Total Volume",
+    "pendingReports": "Pending Reports",
+    "volumeOverTime": "Volume Over Time",
+    "selectShop": "Select Shop",
+    "dailyVolume": "Daily Volume"
+  },
+  "users": {
+    "userManagement": "User Management",
+    "addUser": "Add User",
+    "editUser": "Edit User",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "shop": "Shop",
+    "actions": "Actions",
+    "enterEmail": "Enter email",
+    "enterPassword": "Enter password",
+    "enterDisplayName": "Enter display name",
+    "selectRole": "Select role",
+    "enterShopId": "Enter shop ID",
+    "admin": "Administrator",
+    "manager": "Manager",
+    "user": "User",
+    "displayName": "Display Name",
+    "shopId": "Shop ID"
+  },
+  "errors": {
+    "title": "Oops! Something went wrong",
+    "description": "An unexpected error has occurred. Our team has been notified.",
+    "refresh": "Refresh Page",
+    "tryAgain": "Try Again",
+    "contactSupport": "Contact Support"
+  },
+  "language": {
+    "select": "Select Language",
+    "en": "English",
+    "fr": "Français"
+  }
+} 

@@ -1,0 +1,100 @@
+.wrapper {
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-image: linear-gradient(
+    250deg,
+    rgba(130, 201, 30, 0) 0%,
+    #062343 70%
+  ), url('/assets/images/auth-bg.jpg');
+}
+
+.languageSwitcher {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+}
+
+.title {
+  color: var(--mantine-color-white);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  color: var(--mantine-color-white);
+  opacity: 0.7;
+}
+
+.paper {
+  background-color: var(--mantine-color-white);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  color: var(--mantine-color-dark-7);
+
+  &:hover {
+    transform: scale(1.01);
+    box-shadow: var(--mantine-shadow-md);
+  }
+}
+
+.paper label {
+  color: var(--mantine-color-dark-6);
+  font-weight: 500;
+}
+
+.paper input {
+  &::placeholder {
+    color: var(--mantine-color-gray-5);
+  }
+}
+
+.paper h3 {
+  color: var(--mantine-color-dark-7);
+}
+
+.paper p {
+  color: var(--mantine-color-dark-6);
+}
+
+.forgotPassword {
+  color: var(--mantine-primary-color-6);
+  font-size: var(--mantine-font-size-sm);
+  cursor: pointer;
+  transition: color 150ms ease;
+
+  &:hover {
+    color: var(--mantine-primary-color-8);
+    text-decoration: underline;
+  }
+}
+
+.link {
+  color: var(--mantine-primary-color-6);
+  cursor: pointer;
+  transition: color 150ms ease;
+
+  &:hover {
+    color: var(--mantine-primary-color-8);
+    text-decoration: underline;
+  }
+}
+
+.backButton {
+  color: var(--mantine-color-gray-7);
+  font-size: var(--mantine-font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: color 150ms ease;
+
+  &:hover {
+    color: var(--mantine-color-dark-8);
+  }
+}
+
+.footer {
+  opacity: 0.7;
+} 
