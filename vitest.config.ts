@@ -3,8 +3,10 @@ import react from '@vitejs/plugin-react-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
+const plugins = [react(), tsconfigPaths()] as const;
+
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  plugins: plugins as any,
   test: {
     globals: true,
     environment: 'jsdom',

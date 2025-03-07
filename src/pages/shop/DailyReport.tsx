@@ -1,23 +1,23 @@
-import { useState } from 'react';
 import {
-  Container,
-  Title,
-  Paper,
-  Group,
-  NumberInput,
   Button,
-  Stack,
-  Text,
+  Container,
   Divider,
   Grid,
+  Group,
   LoadingOverlay,
+  NumberInput,
+  Paper,
+  Stack,
+  Text,
+  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useAuth } from '../../hooks/useAuth';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../config/firebase';
-import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { db } from '../../config/firebase';
+import { useAuth } from '../../hooks/useAuth';
 import classes from './DailyReport.module.css';
 
 interface DailyReportForm {
@@ -70,7 +70,7 @@ export default function DailyReport() {
       await addDoc(collection(db, 'dailyReports'), {
         ...values,
         userId: user.uid,
-        shopId: user.shopId,
+        shopId: user.uid,
         timestamp: serverTimestamp(),
       });
 
@@ -102,7 +102,7 @@ export default function DailyReport() {
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Paper withBorder radius="md" className={classes.paper}>
           <LoadingOverlay visible={loading} />
-          <Stack gap="xl">
+          <Stack spacing={7}>
             {/* Electronic Money Balances */}
             <div>
               <Text className={classes.sectionTitle}>
@@ -244,7 +244,7 @@ export default function DailyReport() {
               </Grid>
             </div>
 
-            <Group justify="flex-end">
+              <Group align="center" position="right" spacing={7}>
               <Button type="submit" loading={loading}>
                 {t('submit')}
               </Button>

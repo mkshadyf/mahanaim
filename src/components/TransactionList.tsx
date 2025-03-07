@@ -1,194 +1,119 @@
-import { useEffect, useState } from 'react';
-import {
-  Table,
-  Badge,
-  Group,
-  Text,
-  ActionIcon,
-  Tooltip,
-  Stack,
-} from '@mantine/core';
-import { IconEye, IconDownload } from '@tabler/icons-react';
+import { ActionIcon, Badge, Card, Group, ScrollArea, Table, Text } from '@mantine/core';
+import { IconEye } from '@tabler/icons-react';
+import { format } from 'date-fns';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { collection, query, where, orderBy, limit, getDocs, startAfter, type DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
-import { db } from '@/config/firebase';
-import type { Transaction, TransactionType, TransactionStatus } from '@/types/transaction';
+import type { Transaction } from '../types';
+import { TransactionStatus, TransactionType } from '../types';
+import { TransactionDetail } from './TransactionDetail';
 
 interface TransactionListProps {
-  pageSize?: number;
-  onViewTransaction?: (transaction: Transaction) => void;
-  filters?: {
-    type?: TransactionType;
-    status?: TransactionStatus;
-    dateRange?: [Date | null, Date | null];
-  };
+  transactions: Transaction[];
+  onViewDetails?: (transaction: Transaction) => void;
 }
 
-export function TransactionList({
-  pageSize = 10,
-  onViewTransaction,
-  filters,
-}: TransactionListProps) {
+export function TransactionList({ 
+  transactions = []}: TransactionListProps) {
   const { t } = useTranslation();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
-  const [hasMore, setHasMore] = useState(true);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
-  const fetchTransactions = async (isLoadMore = false) => {
-    try {
-      setLoading(true);
-      let q = query(
-        collection(db, 'transactions'),
-        orderBy('timestamps.created', 'desc'),
-        limit(pageSize)
-      );
-
-      if (filters?.type) {
-        q = query(q, where('type', '==', filters.type));
-      }
-
-      if (filters?.status) {
-        q = query(q, where('status', '==', filters.status));
-      }
-
-      if (filters?.dateRange?.[0]) {
-        q = query(q, where('timestamps.created', '>=', filters.dateRange[0]));
-      }
-
-      if (filters?.dateRange?.[1]) {
-        q = query(q, where('timestamps.created', '<=', filters.dateRange[1]));
-      }
-
-      if (isLoadMore && lastVisible) {
-        q = query(q, startAfter(lastVisible));
-      }
-
-      const snapshot = await getDocs(q);
-      const newTransactions = snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as Transaction
-      );
-
-      setTransactions((prev) =>
-        isLoadMore ? [...prev, ...newTransactions] : newTransactions
-      );
-      setLastVisible(snapshot.docs[snapshot.docs.length - 1] || null);
-      setHasMore(snapshot.docs.length === pageSize);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-    } finally {
-      setLoading(false);
+  const getStatusColor = (status: TransactionStatus) => {
+    switch (status) {
+      case TransactionStatus.COMPLETED:
+        return 'green';
+      case TransactionStatus.FAILED:
+        return 'red';
+      case TransactionStatus.PENDING:
+        return 'yellow';
+      case TransactionStatus.SYNCING:
+        return 'blue';
+      default:
+        return 'gray';
     }
   };
 
-  useEffect(() => {
-    void fetchTransactions();
-  }, [filters]);
-
-  const getStatusColor = (status: TransactionStatus): string => {
-    const colors: Record<TransactionStatus, string> = {
-      pending: 'yellow',
-      processing: 'blue',
-      completed: 'green',
-      failed: 'red',
-      cancelled: 'gray',
-    };
-    return colors[status];
+  const getTypeColor = (type: TransactionType) => {
+    switch (type) {
+      case TransactionType.PAYMENT:
+        return 'red';
+      case TransactionType.DEPOSIT:
+        return 'green';
+      case TransactionType.TRANSFER:
+        return 'blue';
+      case TransactionType.WITHDRAWAL:
+        return 'violet';
+      default:
+        return 'gray';
+    }
   };
 
-  const formatAmount = (amount: number, currency: string) => {
-    return currency === 'USD'
-      ? `$${amount.toLocaleString()}`
-      : `FC ${amount.toLocaleString()}`;
-  };
+  const handleViewTransaction = useCallback((transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+  }, []);
 
-  const handleExport = async () => {
-    // Implement CSV export logic here
-  };
+  const handleCloseDetail = useCallback(() => {
+    setSelectedTransaction(null);
+  }, []);
+
+  if (transactions.length === 0) {
+    return (
+      <Card shadow="sm" p="lg" radius="md" withBorder>
+        <Text align="center">{t('transaction.list.empty')}</Text>
+      </Card>
+    );
+  }
 
   return (
-    <Stack>
-      <Group position="apart">
-        <Text size="lg" weight={500}>
-          {t('recentTransactions')}
-        </Text>
-        <Tooltip label={t('exportTransactions')}>
-          <ActionIcon onClick={handleExport}>
-            <IconDownload size={20} />
-          </ActionIcon>
-        </Tooltip>
-      </Group>
-
-      <Table>
-        <thead>
-          <tr>
-            <th>{t('id')}</th>
-            <th>{t('date')}</th>
-            <th>{t('type')}</th>
-            <th>{t('amount')}</th>
-            <th>{t('status')}</th>
-            <th>{t('party')}</th>
-            <th>{t('actions')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((transaction) => (
-            <tr key={transaction.id}>
-              <td>
-                <Text size="sm" color="dimmed">
-                  {transaction.id.slice(0, 8)}...
-                </Text>
-              </td>
-              <td>
-                <Text size="sm">
-                  {transaction.timestamps.created.toDate().toLocaleDateString()}
-                </Text>
-              </td>
-              <td>
-                <Badge>{t(transaction.type)}</Badge>
-              </td>
-              <td>
-                <Text size="sm">
-                  {formatAmount(transaction.amount.amount, transaction.amount.currency)}
-                </Text>
-              </td>
-              <td>
-                <Badge color={getStatusColor(transaction.status)}>
-                  {t(transaction.status)}
-                </Badge>
-              </td>
-              <td>
-                <Text size="sm">
-                  {transaction.type === 'send'
-                    ? transaction.receiver.name
-                    : transaction.sender.name}
-                </Text>
-              </td>
-              <td>
-                <Group spacing={0} position="left">
-                  {onViewTransaction && (
-                    <ActionIcon onClick={() => onViewTransaction(transaction)}>
+    <>
+      <ScrollArea>
+        <Table striped highlightOnHover>
+          <thead>
+            <tr>
+              <th>{t('transaction.list.date')}</th>
+              <th>{t('transaction.list.description')}</th>
+              <th>{t('transaction.list.amount')}</th>
+              <th>{t('transaction.list.type')}</th>
+              <th>{t('transaction.list.status')}</th>
+              <th>{t('transaction.list.actions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.map((transaction) => (
+              <tr key={transaction.id}>
+                <td>{format(new Date(transaction.createdAt), 'PP')}</td>
+                <td>{transaction.description}</td>
+                <td>
+                  {transaction.currency} {transaction.amount.toLocaleString()}
+                </td>
+                <td>
+                  <Badge color={getTypeColor(transaction.type)}>
+                    {t(`transaction.type.${transaction.type.toLowerCase()}`)}
+                  </Badge>
+                </td>
+                <td>
+                  <Badge color={getStatusColor(transaction.status)}>
+                    {t(`transaction.status.${transaction.status.toLowerCase()}`)}
+                  </Badge>
+                </td>
+                <td>
+                  <Group spacing={0} position="right">
+                    <ActionIcon onClick={() => handleViewTransaction(transaction)}>
                       <IconEye size={16} />
                     </ActionIcon>
-                  )}
-                </Group>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                  </Group>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </ScrollArea>
 
-      {hasMore && (
-        <Group position="center">
-          <ActionIcon
-            onClick={() => void fetchTransactions(true)}
-            loading={loading}
-            variant="subtle"
-          >
-            {t('loadMore')}
-          </ActionIcon>
-        </Group>
+      {selectedTransaction && (
+        <TransactionDetail
+          transaction={selectedTransaction}
+          onClose={handleCloseDetail}
+        />
       )}
-    </Stack>
+    </>
   );
 } 

@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
 import {
+  Center,
   Container,
-  Title,
-  Paper,
-  Text,
+  Grid,
   Group,
+  LoadingOverlay,
+  Paper,
+  RingProgress,
   SegmentedControl,
   Stack,
-  RingProgress,
-  Center,
-  Grid,
-  LoadingOverlay,
+  Text,
+  Title,
 } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../config/firebase';
 import { notifications } from '@mantine/notifications';
+import { collection, getDocs } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { db } from '../../config/firebase';
 import classes from './InventoryAnalysis.module.css';
 
 interface BalanceTotals {
@@ -111,7 +111,7 @@ export default function InventoryAnalysis() {
         <Grid mb="xl">
           <Grid.Col span={4}>
             <Paper withBorder p="md" radius="md" className={classes.paper}>
-              <Stack align="center" gap="xs">
+              <Stack align="center" justify="center" spacing={7}>
                 <Text className={classes.statTitle}>
                   {t('electronicBalance')}
                 </Text>
@@ -141,7 +141,7 @@ export default function InventoryAnalysis() {
           </Grid.Col>
           <Grid.Col span={4}>
             <Paper withBorder p="md" radius="md" className={classes.paper}>
-              <Stack align="center" gap="xs">
+              <Stack align="center" justify="center" spacing={7}>
                 <Text className={classes.statTitle}>
                   {t('cashBalance')}
                 </Text>
@@ -171,7 +171,7 @@ export default function InventoryAnalysis() {
           </Grid.Col>
           <Grid.Col span={4}>
             <Paper withBorder p="md" radius="md" className={classes.paper}>
-              <Stack align="center" gap="xs">
+                <Stack align="center" justify="center" spacing={7}>
                 <Text className={classes.statTitle}>
                   {t('totalBalance')}
                 </Text>

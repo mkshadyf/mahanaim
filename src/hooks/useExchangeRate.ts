@@ -1,60 +1,58 @@
-import { db } from '@/config/firebase';
-import { doc, type DocumentData, DocumentSnapshot, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import { db } from '../firebase';
+import { ExchangeRateService } from '../services/ExchangeRateService';
+import { CurrencyCode } from '../types/transaction';
 
-interface ExchangeRate {
-  rate: number;
-  lastUpdated: Date;
-  source: string;
-}
+// Create a singleton instance of the service
+const exchangeRateService = new ExchangeRateService(db);
 
-interface ExchangeRateData {
-  rate: number;
-  lastUpdated: { toDate: () => Date };
-  source: string;
-}
-
-export const useExchangeRate = () => {
-  const [currentRate, setCurrentRate] = useState<ExchangeRate | null>(null);
-  const [loading, setLoading] = useState(true);
+export function useExchangeRate() {
+  const [rate, setRate] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      doc(db, 'settings', 'exchange_rate'),
-      (doc: DocumentSnapshot<DocumentData>) => {
-        if (doc.exists()) {
-          const data = doc.data() as ExchangeRateData;
-          setCurrentRate({
-            rate: data.rate,
-            lastUpdated: data.lastUpdated.toDate(),
-            source: data.source,
-          });
-        }
-        setLoading(false);
-      },
-      (error: Error) => {
-        setError(error instanceof Error ? error : new Error('Failed to fetch exchange rate'));
-        setLoading(false);
-      }
-    );
+    // Add listener for rate changes
+    exchangeRateService.addListener((newRate) => {
+      setRate(newRate.rate);
+    });
 
-    return () => unsubscribe();
+    return () => {
+      // Remove listener on cleanup
+      exchangeRateService.dispose();
+    };
   }, []);
 
-  const convertAmount = (amount: number, fromCurrency: 'USD' | 'FC', toCurrency: 'USD' | 'FC'): number => {
-    if (!currentRate) return amount;
-    if (fromCurrency === toCurrency) return amount;
+  const convertAmount = (amount: number, fromCurrency: CurrencyCode, toCurrency: CurrencyCode) => {
+    try {
+      return exchangeRateService.convertAmount(amount, fromCurrency, toCurrency);
+    } catch (err) {
+      console.error('Error converting amount:', err);
+      return amount;
+    }
+  };
 
-    return fromCurrency === 'USD'
-      ? amount * currentRate.rate // USD to FC
-      : amount / currentRate.rate; // FC to USD
+  const getCurrentRate = async (fromCurrency: CurrencyCode, toCurrency: CurrencyCode) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const rate = await exchangeRateService.getCurrentRate(fromCurrency, toCurrency);
+      setRate(rate);
+      return rate;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Failed to get exchange rate');
+      setError(error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
-    currentRate,
+    rate,
     loading,
     error,
     convertAmount,
+    getCurrentRate
   };
-};
+}

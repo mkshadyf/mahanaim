@@ -3,21 +3,34 @@ import { initReactI18next } from 'react-i18next';
 import en from './en.json';
 import fr from './fr.json';
 
-const resources = {
-  en: {
-    translation: en,
-  },
-  fr: {
-    translation: fr,
-  },
+// Get stored language preference or use browser language with French fallback
+const getInitialLanguage = (): string => {
+  const storedLanguage = localStorage.getItem('preferredLanguage');
+  if (storedLanguage) {
+    return storedLanguage;
+  }
+
+  // Check browser language but default to French
+  const browserLang = navigator.language.split('-')[0];
+  return browserLang === 'en' ? 'en' : 'fr';
 };
 
-void i18n.use(initReactI18next).init({
-  resources,
-  lng: localStorage.getItem('language') || 'en',
-  fallbackLng: 'en',
+i18n.use(initReactI18next).init({
+  resources: {
+    en: {
+      translation: en,
+    },
+    fr: {
+      translation: fr,
+    },
+  },
+  lng: getInitialLanguage(),
+  fallbackLng: 'fr', // French as fallback
   interpolation: {
     escapeValue: false,
+  },
+  react: {
+    useSuspense: false,
   },
 });
 

@@ -44,11 +44,11 @@ async function createAdminUser() {
   try {
     // Check if admin user already exists
     try {
-      const userRecord = await auth.getUserByEmail(process.env.ADMIN_EMAIL!);
+      const userRecord = await auth.getUserByEmail(process.env.ADMIN_EMAIL);
       console.log('Admin user already exists:', userRecord.uid);
       process.exit(0);
-    } catch (error: any) {
-      if (error.code !== 'auth/user-not-found') {
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code !== 'auth/user-not-found') {
         throw error;
       }
     }

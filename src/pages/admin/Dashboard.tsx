@@ -1,34 +1,34 @@
-import { useEffect, useState } from 'react';
-import {
-  Container,
-  Title,
-  Paper,
-  Text,
-  Group,
-  SimpleGrid,
-  RingProgress,
-  Center,
-  Stack,
-  Button,
-  Select,
-} from '@mantine/core';
-import { useTranslation } from 'react-i18next';
-import { DatesProvider, DatePickerInput } from '@mantine/dates';
-import type { DateValue } from '@mantine/dates';
-import { Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title as ChartTitle,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import type { ChartData, ChartOptions } from 'chart.js';
 import { useTransaction } from '@/hooks/useTransaction';
 import type { TransactionStats } from '@/types/transaction';
+import {
+    Button,
+    Center,
+    Container,
+    Group,
+    Paper,
+    RingProgress,
+    Select,
+    SimpleGrid,
+    Stack,
+    Text,
+    Title,
+} from '@mantine/core';
+import type { DatesRangeValue } from '@mantine/dates';
+import { DatePickerInput, DatesProvider } from '@mantine/dates';
+import type { ChartData, ChartOptions } from 'chart.js';
+import {
+    CategoryScale,
+    Chart as ChartJS,
+    Title as ChartTitle,
+    Legend,
+    LinearScale,
+    LineElement,
+    PointElement,
+    Tooltip,
+} from 'chart.js';
+import { useEffect, useState } from 'react';
+import { Line } from 'react-chartjs-2';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(
   CategoryScale,
@@ -60,7 +60,7 @@ const chartOptions: ChartOptions<'line'> = {
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
-  const { getTransactionStats, loading } = useTransaction();
+  const { getTransactionStats } = useTransaction();
   const [stats, setStats] = useState<TransactionStats | null>(null);
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [selectedCurrency, setSelectedCurrency] = useState<'USD' | 'FC'>('USD');
@@ -91,26 +91,24 @@ export default function AdminDashboard() {
         startDate || undefined,
         endDate || undefined
       );
-      if (stats) setStats(stats);
+      if (stats) setStats(stats as any);
     };
 
     void fetchStats();
   }, [dateRange, getTransactionStats]);
 
-  const handleDateChange = (value: DateValue) => {
-    if (Array.isArray(value) && value.length === 2) {
-      setDateRange([value[0], value[1]]);
-    }
+  const handleDateChange = (value: DatesRangeValue) => {
+    setDateRange(value);
   };
 
   return (
     <Container fluid>
-      <Group position="apart" mb="xl">
+      <Group align="center" position="apart" mb="xl">
         <Title order={2}>{t('dashboard')}</Title>
         <Group>
           <Select
             value={selectedCurrency}
-            onChange={(value: 'USD' | 'FC') => setSelectedCurrency(value)}
+            onChange={(value: string | null) => setSelectedCurrency(value as 'USD' | 'FC')}
             data={[
               { value: 'USD', label: 'USD' },
               { value: 'FC', label: 'FC' },
@@ -121,7 +119,6 @@ export default function AdminDashboard() {
               type="range"
               value={dateRange}
               onChange={handleDateChange}
-              placeholder={t('selectDateRange')}
               clearable
             />
           </DatesProvider>
@@ -137,14 +134,11 @@ export default function AdminDashboard() {
 
       <SimpleGrid
         cols={3}
-        breakpoints={[
-          { maxWidth: 'md', cols: 2 },
-          { maxWidth: 'sm', cols: 1 },
-        ]}
+        spacing="md"
       >
         <Paper withBorder radius="md" p="md">
-          <Stack align="center" spacing="xs">
-            <Text size="xs" color="dimmed" transform="uppercase" weight={700}>
+          <Stack align="center" justify="center" spacing={7}>
+            <Text size="xs" color="dimmed" fw={700}>
               {t('totalTransactions')}
             </Text>
             <Title order={3}>{stats?.count || 0}</Title>
@@ -152,20 +146,20 @@ export default function AdminDashboard() {
         </Paper>
 
         <Paper withBorder radius="md" p="md">
-          <Stack align="center" spacing="xs">
-            <Text size="xs" color="dimmed" transform="uppercase" weight={700}>
+          <Stack align="center" justify="center" spacing={7}>
+            <Text size="xs" color="dimmed" fw={700}>
               {t('totalVolume')} ({selectedCurrency})
             </Text>
             <Title order={3}>
               {selectedCurrency === 'USD' ? '$' : 'FC'}{' '}
-              {((stats?.volume[selectedCurrency] || 0) + (stats?.fees[selectedCurrency] || 0)).toLocaleString()}
+              {((stats?.volume?.[selectedCurrency] || 0) + (stats?.fees?.[selectedCurrency] || 0)).toLocaleString()}
             </Title>
           </Stack>
         </Paper>
 
         <Paper withBorder radius="md" p="md">
-          <Stack align="center" spacing="xs">
-            <Text size="xs" color="dimmed" transform="uppercase" weight={700}>
+          <Stack align="center" justify="center" spacing={7}>
+            <Text size="xs" color="dimmed" fw={700}>
               {t('successRate')}
             </Text>
             <RingProgress
@@ -175,7 +169,7 @@ export default function AdminDashboard() {
               sections={[{ value: stats?.success_rate || 0, color: 'blue' }]}
               label={
                 <Center>
-                  <Text weight={700} size="sm">
+                  <Text fw={700} size="sm">
                     {Math.round(stats?.success_rate || 0)}%
                   </Text>
                 </Center>

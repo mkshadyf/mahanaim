@@ -1,24 +1,24 @@
-import { useState, useEffect } from 'react';
+import { db } from '@/config/firebase';
 import {
-  Container,
-  Title,
-  Paper,
-  TextInput,
-  Button,
-  Group,
-  Table,
   ActionIcon,
-  Text,
+  Button,
+  Container,
+  Group,
   Modal,
   NumberInput,
+  Paper,
   Stack,
+  Table,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db } from '@/config/firebase';
-import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 const shopSchema = z.object({
@@ -164,7 +164,7 @@ export default function ShopManagement() {
 
   return (
     <Container fluid>
-      <Group position="apart" mb="md">
+      <Group align="center" position="apart" mb="md">
         <Title order={2}>{t('shops')}</Title>
         <Button
           onClick={() => {
@@ -196,7 +196,7 @@ export default function ShopManagement() {
                 <td>${shop.initialCapitalUSD.toLocaleString()}</td>
                 <td>FC {shop.initialCapitalFC.toLocaleString()}</td>
                 <td>
-                  <Group spacing={0} position="left">
+                  <Group align="center" position="left" spacing={7}>
                     <ActionIcon onClick={() => handleEdit(shop)}>
                       <IconEdit size={16} />
                     </ActionIcon>
@@ -210,7 +210,7 @@ export default function ShopManagement() {
             {shops.length === 0 && (
               <tr>
                 <td colSpan={5}>
-                  <Text align="center" color="dimmed">
+                    <Text style={{ textAlign: 'center' }} color="dimmed">
                     {t('noShops')}
                   </Text>
                 </td>
@@ -244,7 +244,6 @@ export default function ShopManagement() {
               label={t('initialCapitalUSD')}
               placeholder="5000"
               min={0}
-              precision={2}
               {...form.getInputProps('initialCapitalUSD')}
             />
             <NumberInput
@@ -252,7 +251,6 @@ export default function ShopManagement() {
               label={t('initialCapitalFC')}
               placeholder="5000000"
               min={0}
-              precision={0}
               {...form.getInputProps('initialCapitalFC')}
             />
             <Button type="submit" loading={loading}>

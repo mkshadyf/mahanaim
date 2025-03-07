@@ -1,48 +1,92 @@
-import { ActionIcon, Menu, Group, rem } from '@mantine/core';
-import { IconLanguage } from '@tabler/icons-react';
+import { ActionIcon, Menu, Tooltip } from '@mantine/core';
+import { IconFlag, IconFlagFilled } from '@tabler/icons-react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export default function LanguageSwitcher() {
-  const { t, i18n } = useTranslation();
+export interface LanguageSwitcherProps {
+  variant?: 'icon' | 'text' | 'dropdown';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}
 
-  const changeLanguage = (lng: string) => {
-    void i18n.changeLanguage(lng);
+export function LanguageSwitcher({
+  variant = 'icon',
+  size = 'md',
+}: LanguageSwitcherProps) {
+  const { t, i18n } = useTranslation();
+  
+  const currentLanguage = useMemo(() => {
+    return i18n.language?.startsWith('fr') ? 'fr' : 'en';
+  }, [i18n.language]);
+
+  const toggleLanguage = () => {
+    const newLang = currentLanguage === 'fr' ? 'en' : 'fr';
+    i18n.changeLanguage(newLang);
+    // Store language preference
+    localStorage.setItem('preferredLanguage', newLang);
   };
 
-  return (
-    <Menu shadow="md" width={200}>
-      <Menu.Target>
-        <ActionIcon
-          variant="white"
-          size="lg"
-          aria-label={t('language.select')}
-          radius="md"
-        >
-          <IconLanguage style={{ width: rem(20), height: rem(20) }} stroke={1.5} />
-        </ActionIcon>
-      </Menu.Target>
+  if (variant === 'dropdown') {
+    return (
+      <Menu position="bottom-end" withArrow>
+        <Menu.Target>
+          <ActionIcon
+            variant="subtle"
+            size={size}
+            aria-label={t('language.select')}
+          >
+            {currentLanguage === 'fr' ? (
+              <IconFlagFilled size="1.2rem" />
+            ) : (
+              <IconFlag size="1.2rem" />
+            )}
+          </ActionIcon>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Label>{t('language.select')}</Menu.Label>
+          <Menu.Item
+            onClick={() => i18n.changeLanguage('en')}
+            data-active={currentLanguage === 'en' || undefined}
+          >
+            {t('language.en')}
+          </Menu.Item>
+          <Menu.Item
+            onClick={() => i18n.changeLanguage('fr')}
+            data-active={currentLanguage === 'fr' || undefined}
+          >
+            {t('language.fr')}
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    );
+  }
 
-      <Menu.Dropdown>
-        <Menu.Label fw={500}>{t('language.select')}</Menu.Label>
-        <Menu.Item
-          onClick={() => changeLanguage('en')}
-          data-active={i18n.language === 'en' || undefined}
-          fw={500}
-        >
-          <Group>
-            🇺🇸 {t('language.en')}
-          </Group>
-        </Menu.Item>
-        <Menu.Item
-          onClick={() => changeLanguage('fr')}
-          data-active={i18n.language === 'fr' || undefined}
-          fw={500}
-        >
-          <Group>
-            🇫🇷 {t('language.fr')}
-          </Group>
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
+  if (variant === 'text') {
+    return (
+      <ActionIcon
+        variant="subtle"
+        onClick={toggleLanguage}
+        aria-label={t('language.select')}
+      >
+        {currentLanguage === 'fr' ? 'FR' : 'EN'}
+      </ActionIcon>
+    );
+  }
+
+  // Default icon variant
+  return (
+    <Tooltip label={t('language.select')}>
+      <ActionIcon
+        variant="subtle"
+        onClick={toggleLanguage}
+        size={size}
+        aria-label={t('language.select')}
+      >
+        {currentLanguage === 'fr' ? (
+          <IconFlagFilled size="1.2rem" />
+        ) : (
+          <IconFlag size="1.2rem" />
+        )}
+      </ActionIcon>
+    </Tooltip>
   );
 } 

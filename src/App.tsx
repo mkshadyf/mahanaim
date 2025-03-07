@@ -1,59 +1,66 @@
-import { MantineProvider } from '@mantine/core';
+import type { ColorScheme } from '@mantine/core';
+import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
-import ErrorBoundary from '@/components/ErrorBoundary';
-import { AuthProvider } from '@/contexts/AuthContext';
-import AppRoutes from '@/routes';
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
+import { AppLayout } from './components/AppLayout';
+import { AuthProvider } from './contexts/AuthContext';
+import { ServiceProvider } from './contexts/ServiceContext';
+import { AppRoutes } from './routes/AppRoutes';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-});
-
+/**
+ * Main application component
+ */
 export default function App() {
+  // Color scheme state
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: 'mantine-color-scheme',
+    defaultValue: 'light',
+    getInitialValueInEffect: true,
+  });
+  
+  // Toggle color scheme
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+  
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider
           theme={{
+            colorScheme,
             primaryColor: 'blue',
-            fontFamily: 'Inter, system-ui, sans-serif',
-            defaultRadius: 'sm',
             components: {
               Button: {
                 defaultProps: {
-                  size: 'sm',
+                  radius: 'md',
                 },
               },
               TextInput: {
                 defaultProps: {
-                  size: 'sm',
+                  radius: 'md',
                 },
               },
               Select: {
                 defaultProps: {
-                  size: 'sm',
+                  radius: 'md',
                 },
               },
             },
           }}
+          withGlobalStyles
+          withNormalizeCSS
         >
           <Notifications position="top-right" />
-          <BrowserRouter>
+          <ServiceProvider>
             <AuthProvider>
-              <AppRoutes />
+              <AppLayout>
+                <AppRoutes />
+              </AppLayout>
             </AuthProvider>
-          </BrowserRouter>
+          </ServiceProvider>
         </MantineProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+      </ColorSchemeProvider>
+    </BrowserRouter>
   );
 }

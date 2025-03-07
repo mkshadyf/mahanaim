@@ -2,8 +2,85 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isManager() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager';
+    }
+    
+    function isUser() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'user';
+    }
+    
+    function belongsToShop(shopId) {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.shopId == shopId;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Default deny all
     match /{document=**} {
-      allow read, write: if true; // Allow all read and write operations
+      allow read, write: if false;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAdmin();
+      allow update: if isOwner(userId) && 
+        request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['displayName', 'photoURL']);
+    }
+    
+    // Transactions collection
+    match /transactions/{transactionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        (isAdmin() || belongsToShop(request.resource.data.shopId));
+      allow update: if isAdmin() || 
+        (belongsToShop(resource.data.shopId) && 
+         request.resource.data.diff(resource.data).affectedKeys()
+         .hasOnly(['status', 'notes']));
+      allow delete: if isAdmin();
+    }
+    
+    // Shops collection
+    match /shops/{shopId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Debts collection
+    match /debts/{debtId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAdmin() || isManager();
+      allow delete: if isAdmin();
+    }
+    
+    // Daily reports collection
+    match /dailyReports/{reportId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        (isAdmin() || belongsToShop(request.resource.data.shopId));
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
   }
 }

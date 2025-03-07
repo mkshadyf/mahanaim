@@ -1,24 +1,25 @@
-import { useState } from 'react';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useAuth } from '@/contexts/AuthContext';
 import {
-  TextInput,
-  PasswordInput,
-  Paper,
-  Title,
-  Container,
-  Button,
-  Text,
-  Box,
-  Stack,
-  Group,
-  LoadingOverlay,
+    Alert,
+    Box,
+    Button,
+    Container,
+    Group,
+    LoadingOverlay,
+    Paper,
+    PasswordInput,
+    Stack,
+    Text,
+    TextInput,
+    Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconAt, IconLock, IconArrowLeft } from '@tabler/icons-react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
-import { useAuth } from '@/contexts/AuthContext';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { IconArrowLeft, IconAt, IconInfoCircle, IconLock } from '@tabler/icons-react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import classes from './Login.module.css';
 
 interface LoginFormValues {
@@ -73,7 +74,7 @@ export default function Login() {
       </Box>
 
       <Container size={420} my={40}>
-        <Stack gap={0} align="center" mb="xl">
+        <Stack spacing={7} align="center" mb="xl">
           <Title className={classes.title} order={1}>
             {t('common.appName')}
           </Title>
@@ -86,12 +87,12 @@ export default function Login() {
           <Paper className={classes.paper} withBorder shadow="md" p={30} radius="md" pos="relative">
             <LoadingOverlay visible={loading} />
             <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Stack gap="md">
+                <Stack spacing={7}>
                 <TextInput
                   required
                   label={t('auth.email')}
                   placeholder={t('auth.emailPlaceholder')}
-                  leftSection={<IconAt size={16} stroke={1.5} />}
+                    icon={<IconAt size={16} />}
                   {...form.getInputProps('email')}
                 />
 
@@ -99,11 +100,23 @@ export default function Login() {
                   required
                   label={t('auth.password')}
                   placeholder={t('auth.passwordPlaceholder')}
-                  leftSection={<IconLock size={16} stroke={1.5} />}
+                  icon={<IconLock size={16} />}
                   {...form.getInputProps('password')}
                 />
 
-                <Group justify="flex-end">
+                <Alert 
+                  icon={<IconInfoCircle size="1rem" />}
+                  title="Test Credentials"
+                  color="blue"
+                  variant="light"
+                >
+                  <Text size="sm">
+                    Email: admin@test.com<br />
+                    Password: admin123
+                  </Text>
+                </Alert>
+
+                <Group align="flex-end">
                   <Text
                     className={classes.forgotPassword}
                     onClick={() => setIsResetMode(true)}
@@ -134,7 +147,7 @@ export default function Login() {
         ) : (
           <Paper className={classes.paper} withBorder shadow="md" p={30} radius="md" mt={30} pos="relative">
             <LoadingOverlay visible={loading} />
-            <Stack gap="md">
+            <Stack spacing={7}>
               <div>
                 <Title order={3} c="dark.7" mb="xs">
                   {t('auth.resetPassword.title')}
@@ -148,11 +161,11 @@ export default function Login() {
                 required
                 label={t('auth.email')}
                 placeholder={t('auth.emailPlaceholder')}
-                leftSection={<IconAt size={16} stroke={1.5} />}
+                icon={<IconAt size={16} />}
                 {...form.getInputProps('email')}
               />
 
-              <Group justify="space-between" mt="md">
+              <Group align="flex-end">
                 <Text
                   className={classes.backButton}
                   onClick={() => setIsResetMode(false)}

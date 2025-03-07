@@ -1,5 +1,5 @@
+import { Button, Container, Paper, Stack, Text, Title } from '@mantine/core';
 import { Component, type ReactNode } from 'react';
-import { Container, Title, Text, Button, Stack, Paper } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
@@ -17,7 +17,7 @@ function ErrorFallback({ error }: { error: Error | null }): JSX.Element {
   return (
     <Container size="md" py="xl">
       <Paper shadow="md" p="xl" radius="md" withBorder>
-        <Stack align="center" gap="md">
+        <Stack align="center" justify="center" spacing={10}>
           <Title order={1} c="red">
             {t('error.title', 'Oops! Something went wrong')}
           </Title>

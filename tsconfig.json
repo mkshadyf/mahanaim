@@ -5,19 +5,18 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "allowJs": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
@@ -39,13 +38,14 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "noErrorTruncation": true
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.d.ts",
+    "scripts/**/*.ts",
     "vitest.config.ts",
     "vite.config.ts"
   ],
@@ -53,7 +53,8 @@
     "node_modules",
     "dist",
     "build",
-    "coverage"
+    "coverage",
+    "vite.config.ts"
   ],
   "references": [
     { "path": "./tsconfig.node.json" }

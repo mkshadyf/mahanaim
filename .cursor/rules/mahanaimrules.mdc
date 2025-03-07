@@ -1,0 +1,19 @@
+---
+description: 
+globs: 
+---
+
+# Your rule content
+
+- use a strict DRY aproach by carefully checking if the file you judge to create, is not existent maybe in different directory or with different name...
+- always try understanding filetree to have a broader overview as well
+
+- always give me a gps(progress tracking) of our development to understand what we've done so far and what is to be done
+- always propose me latest top dev tools and hacks to help me save time and effort
+- use best code organization and centralization practices
+- Mahanaim is meant to be more mobile and used even offline so ensure mobile features are respected to the full
+- always pick shortcuts ideas rather than long development efforts
+- BARREL exports must be a norm
+- document each module or major feature folder with README with clear details of what's up
+- leverage Single Source of Truth principles more often
+- the app is for french users so ensure language switch button is available everywhere easily and default language is french. always add any front end content texts to translations files if they do no exist yet [en.json](mdc:src/i18n/en.json) [fr.json](mdc:src/i18n/fr.json)

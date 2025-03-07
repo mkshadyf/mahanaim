@@ -1,14 +1,14 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Login from '@/pages/auth/Login';
 import AdminDashboard from '@/pages/admin/Dashboard';
-import UserManagement from '@/pages/admin/UserManagement';
 import DebtManagement from '@/pages/admin/DebtManagement';
 import InventoryAnalysis from '@/pages/admin/InventoryAnalysis';
-import ShopDashboard from '@/pages/shop/Dashboard';
+import UserManagement from '@/pages/admin/UserManagement';
+import Login from '@/pages/auth/Login';
 import DailyReport from '@/pages/shop/DailyReport';
+import ShopDashboard from '@/pages/shop/Dashboard';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { TransactionsPage } from '../pages/TransactionsPage';
 
 export default function AppRoutes() {
   return (
@@ -49,6 +49,16 @@ export default function AppRoutes() {
         <Route path="dashboard" element={<ShopDashboard />} />
         <Route path="daily-report" element={<DailyReport />} />
       </Route>
+
+      {/* Transactions route */}
+      <Route
+        path="/transactions"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'manager', 'user']}>
+            <TransactionsPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Fallback routes */}
       <Route path="/" element={<Navigate to="/login" replace />} />

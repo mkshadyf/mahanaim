@@ -1,37 +1,37 @@
-import { useState, useEffect, useCallback } from 'react';
 import {
-  Container,
-  Title,
-  Paper,
-  TextInput,
-  Button,
-  Table,
   ActionIcon,
-  Text,
-  Modal,
-  Stack,
-  NumberInput,
-  Select,
-  Grid,
-  Tabs,
-  RingProgress,
   Box,
-  LoadingOverlay,
+  Button,
+  Container,
+  Grid,
   Group,
+  LoadingOverlay,
+  Modal,
+  NumberInput,
+  Paper,
+  RingProgress,
+  Select,
+  Stack,
+  Table,
+  Tabs,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconEdit, IconTrash, IconPlus } from '@tabler/icons-react';
-import {
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  updateDoc,
-  deleteDoc,
-} from 'firebase/firestore';
-import { db } from '../../config/firebase';
-import { useTranslation } from 'react-i18next';
 import { notifications } from '@mantine/notifications';
+import { IconEdit, IconPlus, IconTrash } from '@tabler/icons-react';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from 'firebase/firestore';
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { db } from '../../config/firebase';
 import classes from './DebtManagement.module.css';
 
 interface Debt {
@@ -202,7 +202,7 @@ export default function DebtManagement() {
       <Box className={classes.header}>
         <Title order={2}>{t('debtManagement')}</Title>
         <Button
-          leftSection={<IconPlus size={16} />}
+          leftIcon={<IconPlus size={16} />}
           onClick={() => {
             form.reset();
             setEditingDebt(null);
@@ -276,7 +276,11 @@ export default function DebtManagement() {
 
       <Paper withBorder p="md" radius="md" pos="relative">
         <LoadingOverlay visible={loading} />
-        <Tabs value={activeTab} onChange={(value) => setActiveTab(value as 'receivable' | 'payable')}>
+        <Tabs value={activeTab} onChange={(value) => {
+          if (typeof value === 'string' && (value === 'receivable' || value === 'payable')) {
+            setActiveTab(value);
+          }
+        }}>
           <Tabs.List>
             <Tabs.Tab value="receivable">{t('receivables')}</Tabs.Tab>
             <Tabs.Tab value="payable">{t('payables')}</Tabs.Tab>
@@ -284,28 +288,28 @@ export default function DebtManagement() {
 
           <Tabs.Panel value="receivable">
             <Table mt="md">
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>{t('agent')}</Table.Th>
-                  <Table.Th>{t('amountUSD')}</Table.Th>
-                  <Table.Th>{t('amountFC')}</Table.Th>
-                  <Table.Th>{t('date')}</Table.Th>
-                  <Table.Th>{t('notes')}</Table.Th>
-                  <Table.Th>{t('actions')}</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
+              <thead>
+                <tr>
+                  <th>{t('agent')}</th>
+                  <th>{t('amountUSD')}</th>
+                  <th>{t('amountFC')}</th>
+                  <th>{t('date')}</th>
+                  <th>{t('notes')}</th>
+                  <th>{t('actions')}</th>
+                </tr>
+              </thead>
+              <tbody>
                 {debts
                   .filter((debt) => debt.type === 'receivable')
                   .map((debt) => (
-                    <Table.Tr key={debt.id}>
-                      <Table.Td>{debt.agentName}</Table.Td>
-                      <Table.Td>${debt.amountUSD.toFixed(2)}</Table.Td>
-                      <Table.Td>FC {debt.amountFC.toLocaleString()}</Table.Td>
-                      <Table.Td>{debt.date.toLocaleDateString()}</Table.Td>
-                      <Table.Td>{debt.notes}</Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
+                    <tr key={debt.id}>
+                      <td>{debt.agentName}</td>
+                      <td>${debt.amountUSD.toFixed(2)}</td>
+                      <td>FC {debt.amountFC.toLocaleString()}</td>
+                      <td>{debt.date.toLocaleDateString()}</td>
+                      <td>{debt.notes}</td>
+                      <td>
+                        <Group align="center" position="left" spacing={7}>
                           <ActionIcon
                             variant="subtle"
                             color="blue"
@@ -321,37 +325,37 @@ export default function DebtManagement() {
                             <IconTrash size={16} />
                           </ActionIcon>
                         </Group>
-                      </Table.Td>
-                    </Table.Tr>
+                      </td>
+                    </tr>
                   ))}
-              </Table.Tbody>
+              </tbody>
             </Table>
           </Tabs.Panel>
 
           <Tabs.Panel value="payable">
             <Table mt="md">
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>{t('agent')}</Table.Th>
-                  <Table.Th>{t('amountUSD')}</Table.Th>
-                  <Table.Th>{t('amountFC')}</Table.Th>
-                  <Table.Th>{t('date')}</Table.Th>
-                  <Table.Th>{t('notes')}</Table.Th>
-                  <Table.Th>{t('actions')}</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
+              <thead>
+                <tr>
+                  <th>{t('agent')}</th>
+                  <th>{t('amountUSD')}</th>
+                  <th>{t('amountFC')}</th>
+                  <th>{t('date')}</th>
+                  <th>{t('notes')}</th>
+                  <th>{t('actions')}</th>
+                </tr>
+              </thead>
+              <tbody>
                 {debts
                   .filter((debt) => debt.type === 'payable')
                   .map((debt) => (
-                    <Table.Tr key={debt.id}>
-                      <Table.Td>{debt.agentName}</Table.Td>
-                      <Table.Td>${debt.amountUSD.toFixed(2)}</Table.Td>
-                      <Table.Td>FC {debt.amountFC.toLocaleString()}</Table.Td>
-                      <Table.Td>{debt.date.toLocaleDateString()}</Table.Td>
-                      <Table.Td>{debt.notes}</Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
+                    <tr key={debt.id}>
+                      <td>{debt.agentName}</td>
+                      <td>${debt.amountUSD.toFixed(2)}</td>
+                      <td>FC {debt.amountFC.toLocaleString()}</td>
+                      <td>{debt.date.toLocaleDateString()}</td>
+                      <td>{debt.notes}</td>
+                      <td>
+                        <Group align="center" position="left" spacing={7}>
                           <ActionIcon
                             variant="subtle"
                             color="blue"
@@ -367,10 +371,10 @@ export default function DebtManagement() {
                             <IconTrash size={16} />
                           </ActionIcon>
                         </Group>
-                      </Table.Td>
-                    </Table.Tr>
+                      </td>
+                    </tr>
                   ))}
-              </Table.Tbody>
+              </tbody>
             </Table>
           </Tabs.Panel>
         </Tabs>
@@ -382,7 +386,7 @@ export default function DebtManagement() {
         title={editingDebt ? t('editDebt') : t('addDebt')}
       >
         <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Stack gap="md">
+          <Stack spacing={7}>
             <TextInput
               label={t('agentName')}
               placeholder={t('enterAgentName')}
@@ -429,7 +433,7 @@ export default function DebtManagement() {
               placeholder={t('enterNotes')}
               {...form.getInputProps('notes')}
             />
-            <Group justify="flex-end">
+                <Group align="center" position="right" spacing={7}>
               <Button variant="outline" onClick={handleCloseModal}>
                 {t('cancel')}
               </Button>

@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
 import {
-  Container,
-  Paper,
-  Title,
-  Text,
-  Button,
-  Modal,
-  TextInput,
-  PasswordInput,
-  Stack,
-  Group,
   Box,
-  Table,
-  Select,
+  Button,
+  Container,
+  Group,
   LoadingOverlay,
+  Modal,
+  Paper,
+  PasswordInput,
+  Select,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconPlus, IconAt, IconLock } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
+import { IconAt, IconLock, IconPlus, IconUser } from '@tabler/icons-react';
 import {
   createUserWithEmailAndPassword,
   updateProfile,
@@ -25,16 +25,16 @@ import {
 } from 'firebase/auth';
 import {
   collection,
-  doc,
-  setDoc,
-  getDocs,
-  updateDoc,
   deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
   type DocumentData,
 } from 'firebase/firestore';
-import { auth, db } from '../../config/firebase';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { notifications } from '@mantine/notifications';
+import { auth, db } from '../../config/firebase';
 import classes from './UserManagement.module.css';
 
 interface UserForm {
@@ -182,7 +182,7 @@ export default function UserManagement() {
       <Box className={classes.header}>
         <Title order={2}>{t('userManagement')}</Title>
         <Button
-          leftSection={<IconPlus size={16} />}
+          leftIcon={<IconPlus size={16} />}
           onClick={() => {
             form.reset();
             setEditingUser(null);
@@ -196,18 +196,18 @@ export default function UserManagement() {
       <Paper withBorder radius="md" className={classes.paper}>
         <LoadingOverlay visible={loading} />
         <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>{t('name')}</Table.Th>
-              <Table.Th>{t('email')}</Table.Th>
-              <Table.Th>{t('role')}</Table.Th>
-              <Table.Th>{t('shop')}</Table.Th>
-              <Table.Th>{t('actions')}</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
+          <thead>
+            <tr>
+              <th>{t('name')}</th>
+              <th>{t('email')}</th>
+              <th>{t('role')}</th>
+              <th>{t('shop')}</th>
+              <th>{t('actions')}</th>
+            </tr>
+          </thead>
+          <tbody>
             {users.map((user) => (
-              <Table.Tr
+              <tr
                 key={user.uid}
                 className={classes.tableRow}
                 onClick={() => {
@@ -222,27 +222,27 @@ export default function UserManagement() {
                   setModalOpened(true);
                 }}
               >
-                <Table.Td>
-                  <Group gap="sm">
+                <td>
+                  <Group align="center" position="left" spacing={7}>
                     <Text className={classes.userName}>
                       {user.displayName}
                     </Text>
                   </Group>
-                </Table.Td>
-                <Table.Td>
+                </td>
+                <td>
                   <Text className={classes.userEmail}>{user.email}</Text>
-                </Table.Td>
-                <Table.Td>
+                </td>
+                <td>
                   <Text className={classes.userRole}>
                     {t(user.role)}
                   </Text>
-                </Table.Td>
-                <Table.Td>
+                </td>
+                <td>
                   <Text className={classes.userShop}>
                     {user.shopId || '-'}
                   </Text>
-                </Table.Td>
-                <Table.Td>
+                </td>
+                <td>
                   <Button
                     variant="subtle"
                     color="red"
@@ -253,10 +253,10 @@ export default function UserManagement() {
                   >
                     {t('delete')}
                   </Button>
-                </Table.Td>
-              </Table.Tr>
+                </td>
+              </tr>
             ))}
-          </Table.Tbody>
+          </tbody>
         </Table>
       </Paper>
 
@@ -270,13 +270,13 @@ export default function UserManagement() {
         title={editingUser ? t('editUser') : t('addUser')}
       >
         <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Stack gap="md">
+            <Stack spacing={7}>
             <TextInput
               label={t('email')}
               placeholder={t('enterEmail')}
               disabled={!!editingUser}
               required
-              leftSection={<IconAt size={16} />}
+              icon={<IconAt size={16} />}
               {...form.getInputProps('email')}
             />
 
@@ -285,7 +285,7 @@ export default function UserManagement() {
                 label={t('password')}
                 placeholder={t('enterPassword')}
                 required
-                leftSection={<IconLock size={16} />}
+                icon={<IconLock size={16} />}
                 {...form.getInputProps('password')}
               />
             )}
@@ -294,6 +294,7 @@ export default function UserManagement() {
               label={t('displayName')}
               placeholder={t('enterDisplayName')}
               required
+              icon={<IconUser size={16} />}
               {...form.getInputProps('displayName')}
             />
 
@@ -315,7 +316,7 @@ export default function UserManagement() {
               {...form.getInputProps('shopId')}
             />
 
-            <Group justify="flex-end">
+            <Group align="flex-end">
               <Button variant="outline" onClick={() => setModalOpened(false)}>
                 {t('cancel')}
               </Button>
